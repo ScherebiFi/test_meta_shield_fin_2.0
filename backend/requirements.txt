@@ -1,0 +1,15 @@
+fastapi>=0.110,<1
+uvicorn[standard]>=0.27,<1
+pydantic>=2.6,<3
+httpx>=0.27,<1
+python-dotenv>=1,<2
+reportlab>=4,<5
+scikit-learn>=1.4,<2
+numpy>=1.26,<3
+neo4j>=5,<7
+SQLAlchemy>=2.0,<3
+psycopg[binary]>=3.2,<4
+PyJWT>=2.9,<3
+argon2-cffi>=23.1,<26
+cryptography>=43,<47
+google-auth>=2.35,<3

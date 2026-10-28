@@ -1,0 +1,525 @@
+Voici le dossier de conception global, unifié et final de Meta ShieldFin ( combine de v1 et v2 ), restructuré de A à Z pour intégrer de manière fluide et transparente l'ensemble de notre architecture validée, les rôles précis des 4 acteurs, l'enregistrement universel des actions (Audit Trail), ainsi que la stack technologique, les workflows et le détail de chaque composant.
+
+---
+
+ 📑 DOSSIER DE CONCEPTION GLOBAL et STACK TECHNIQUE : META SHIELDFIN
+
+Système de Défense Bancaire Autonome, Hybride et Résilient (SOC Industriel à 4 Acteurs IA)
+
+---
+
+ 1. Cadrage, Problématique et Positionnement
+
+ 🛡️ Charte de Projet (Project Charter)
+
+ Nom du Projet : Meta ShieldFin.
+
+
+ Vision / Objectif : Révolutionner la cybersécurité des transactions en ligne en combinant une vitesse d'exécution instantanée, un mode de secours hors-ligne total, la confidentialité absolue des données (Preuves Zéro-Connaissance) et un écosystème à 4 acteurs décisionnels piloté par des agents autonomes.
+
+
+ Cadre : Meta Global AI Developer Hackathon (Thème : Push the Frontier).
+
+
+
+ 🚨 La Problématique et Le Facteur de Rupture
+
+Les solutions traditionnelles (Stripe Radar, FICO Falcon, passerelles bancaires) souffrent de tares structurelles majeures :
+
+1. Dilemme Vitesse / Précision : Latence élevée et taux massif de faux positifs.
+
+
+2. Vulnérabilité Cloud : Paralysie totale en cas de coupure de connexion.
+
+
+3. Violation du RGPD : Centralisation et exposition des données sensibles clients en clair.
+
+
+4. Passivité des Dashboards : Interfaces purement visuelles sans capacité d'action directe ni auto-guérison.
+
+
+
+La Réponse Meta ShieldFin : Un système de défense décentralisé reposant sur un modèle hybride où l'humain, le ML local, l'IA Cloud et un Agent d'Auto-Guérison coopèrent en temps réel.
+
+---
+
+ 2. L'Écosystème à 4 Acteurs Décisionnels
+
+L'intelligence et la supervision de Meta ShieldFin reposent sur une coopération étroite entre 4 piliers décisionnels :
+
+1. 👤 L'Humain (Opérateur SOC) : Gardien souverain de la supervision, capable d'intervenir en 1 clic (Boucle RLHF pour réajuster le système).
+
+
+2. ⚡ Le ML Local (Scikit-Learn - Isolation Forest) : Le gardien ultra-rapide (< 5 ms) qui intercepte les botnets et assure la continuité en mode Fail-Safe si le cloud tombe.
+
+
+3. 🧠 L'IA Cloud (Meta Llama 3.1 via Groq) : Le cerveau cognitif pour l'analyse sémantique des zones grises, les décisions de blocage (Moniteur 1) et l'arbitrage des défis clients (Moniteur 3).
+
+
+4. 🧬 Le 4ème Agent (Autonomous Self-Healing Agent) : L'agent d'auto-apprentissage (Moniteur 5) qui analyse les erreurs passées en arrière-plan et réécrit ses propres règles de défense sans intervention humaine.
+
+
+
+---
+
+ 3. Stack Logicielle, Outils et Workflows de Déploiement Cloud
+
+ A. Stack Technologique et Outils par Composant
+
+ Back-End et API :
+ Python 3.11+, FastAPI (asynchrone, documentation OpenAPI/Swagger automatique), Uvicorn (Serveur ASGI).
+
+
+ Validation de données : Pydantic (pour filtrer et sécuriser l'ingestion des charges utiles financières).
+
+
+
+
+ Bus de Messages Asynchrone :
+ Apache Kafka ou RabbitMQ (pour absorber, lisser et distribuer les flux massifs de transactions sans saturation).
+
+
+
+
+ Bases de Données et Persistance :
+ Relationnel / NoSQL : PostgreSQL ou MongoDB (stockage sécurisé des profils et métadonnées).
+
+
+ Base de Graphes : Neo4j (cartographie et traçage des réseaux de blanchiment d'argent et de mules financières).
+
+
+
+
+ Machine Learning et Edge Computing (Vitesse < 5 ms) :
+ Scikit-Learn (Isolation Forest) pour l'analyse statistique brute et le Velocity Checking.
+
+
+ Mode Fail-Safe : Algorithme de bascule autonome en cas de coupure cloud.
+
+
+
+
+ Intelligence Artificielle et Agents Cognitifs :
+ API Meta Llama 3.1 (hébergée et optimisée via Groq Cloud API pour une inférence instantanée en temps réel).
+
+
+
+
+ Technologies du 4ème Agent (Moniteur 5 - Self-Healing) :
+ Optimisation et ML : Algorithmes d'apprentissage par renforcement léger et d'optimisation de seuils (Python, scripts d'ajustement de poids).
+
+
+ NLP (Natural Language Processing) : Capacités textuelles de Meta Llama pour la génération autonome de règles de défense en langage naturel.
+
+
+ Simulation : Scripts de Red Teaming IA pour générer des flux de test virtuels (botnets simulés).
+
+
+
+
+ Cryptographie et Confidentialité (RGPD) :
+ snarkjs / Circom (génération et vérification de preuves Zéro-Connaissance / ZK-SNARKs).
+
+
+
+
+ Canaux de Notification et Clients :
+ Firebase Cloud Messaging (FCM) et Telegram Bot API pour les pushs de sécurité et les défis 2FA.
+
+
+
+
+ Front-End (SOC Industriel) :
+ HTML5, CSS3 pur (thème industriel à fond clair conforme à la norme ISO 9241 pour réduire la fatigue visuelle), JavaScript (Vanilla JS) avec WebSockets natifs pour le streaming en direct.
+
+
+
+
+
+ B. Workflow et Déploiement Cloud (Hackathon Ready / Zero-Cost)
+
+ Front-End (Interface SOC) : Statique, ultra-rapide, déployé sur Vercel ou GitHub Pages.
+
+
+ Back-End (FastAPI et Microservices) : Conteneurisé via Docker et hébergé sur Render.com ou Hugging Face Spaces.
+
+
+ Inférence IA : Requêtes API sécurisées en temps réel vers l'infrastructure cloud de Groq.
+
+
+
+---
+
+ 4. Architecture Technique Globale (Data Pipeline)
+
+
+[ Site E-Commerce / App Mobile ]
+         │
+         ▼ (HTTPS / Validation Stricte Pydantic)
+[ 1. Ingestion FastAPI et Bus Kafka / RabbitMQ ]
+         │
+         ├──► Capture de la Biométrie Passive (Clavier / Souris via keystroke_biometrics.py)
+         └──► Génération du Hash ZK-SNARKs (snarkjs)
+         │
+         ▼
+[ 2. Moteur ML Local (< 5 ms) : Scikit-Learn (Isolation Forest) ]
+         │
+         ├───────────────────────────────────┐
+         ▼                                   ▼
+ [ Cas Sûr / Normal ]               [ Cas Suspect / Zone Grise ]
+         │                                   │
+ [ Validation ZK-Proof ]           ┌─────────┴─────────────────────────┐
+                                   ▼                                   ▼
+                            [ Cloud OK ]                     [ Panne Cloud / Off ]
+                            Agent IA Meta Llama              Mode FAIL-SAFE Local
+                            (Groq API)                       (Seuil ML Durci)
+                                   │                                   │
+                                   └─────────────────┬─────────────────┘
+                                                     ▼
+                                 [ 3. Moniteur 3 : Centre d'Interaction Client ]
+                                 ├─► Outbound : Dispatch 2FA (FCM / Telegram)
+                                 ├─► Inbound : Réception des réponses et Biométrie
+                                 └─► Décision Agentique IA (Validation / Blocage)
+                                                     │
+                                                     ▼
+                                 [ 4. Live SOC (Moniteur 1) et Base Neo4j ]
+                                 └─► Action 1-Clic Humain-dans-la-Boucle (RLHF)
+
+_____________________________________________________________
+
+---
+
+ 5. Spécifications Détaillées des 5 Moniteurs SOC et Répartition des Rôles
+
+ 🚨 0. Header Global Permanent (Visible en permanence sur les 5 onglets)
+
+Barre d'état industrielle à fond clair (norme ISO 9241).
+
+ Éléments graphiques : Logo `Meta ShieldFin v1.0`, Statut Cloud (`● API GROQ / LLAMA OPÉRATIONNEL` ou `● HORS-LIGNE`), Compteurs Live.
+
+
+ Bouton d'Urgence `[ ⚡ FAIL-SAFE EMERGENCY SWITCH ]` :
+ Front-End : Ouvre une modale de double confirmation critique.
+
+
+ Back-End : Appelle `/api/system/failsafe-toggle` pour durcir les seuils du moteur local `Isolation Forest`.
+
+
+ Audit Trail : Enregistre l'action avec le tag `[HUMAN-CRITICAL-ACTION]`.
+
+
+
+
+ Rôle des Agents : 👤 Humain (valide l'urgence) | ⚡ ML Local (fournit le signal de santé) | 🧠 IA Cloud (surveille la latence) | 🧬 4ème Agent (analyse la stabilité globale).
+
+
+
+---
+
+ 📺 1. Moniteur 1 : Live SOC (Surveillance des Flux et Interventions 1-Clic)
+
+ Rôle des Agents :
+ ⚡ ML Local : Ingestion et analyse mathématique brute de 100 % des transactions en < 5 ms (Isolation Forest + Velocity Checking).
+
+
+ 🧠 IA Cloud : Analyse sémantique des zones grises et décision agentique (blocage immédiat ou exigence 2FA).
+
+
+ 👤 Humain : Intervient en 1 clic (`[Approuver]`, `[Exiger 2FA]`, `[Bloquer]`) et alimente la boucle RLHF.
+
+
+ 🧬 4ème Agent : Observe les corrections manuelles et faux positifs pour préparer l'auto-apprentissage.
+
+
+
+
+ Boutons d'Action et Back-End :
+ `[ ✔ Approuver et Valider ]` : Route `/api/soc/approve` (RLHF positif) — Audit : `[HUMAN-SOC-OP]`.
+
+
+ `[ 🔒 Exiger Défi 2FA ]` : Route `/api/soc/trigger-challenge` — Audit : `[AI-ORCHESTRATED]`.
+
+
+ `[ ✖ Bloquer Immédiatement ]` : Route `/api/soc/block` (Met à jour Neo4j) — Audit : `[AI-AGENT-LLAMA]` ou `[HUMAN-SOC]`.
+
+
+
+
+
+---
+
+ 🔐 2. Moniteur 2 : Registre DB et ZK-Proof (Audit et Conformité RGPD)
+
+ Rôle des Agents :
+ ⚡ ML Local / Cryptographie : Vérifie instantanément les hashes de preuves mathématiques ZK-SNARKs (`snarkjs`).
+
+
+ 🧠 IA Cloud : Traduit les requêtes de l'analyste en langage naturel (Text-to-SQL/NoSQL).
+
+
+ 👤 Humain : Consulte l'historique d'audit universel immuable et audite la conformité RGPD.
+
+
+ 🧬 4ème Agent : Indexe et catégorise les logs d'audit pour affiner sa base de connaissances.
+
+
+
+
+ Éléments et Back-End :
+ Barre de recherche sémantique.
+
+
+ Tableau du Journal d'Audit Universel (`Audit_Logs`).
+
+
+ `[ 🔍 Vérifier l'Intégrité ZK ]` : Exécute `zk_proof_verifier.py` (via `snarkjs`) sans exposer les données en clair.
+
+
+
+
+
+---
+
+ 📲 3. Moniteur 3 : Centre d'Interaction Client (2FA, Biométrie et Signalements)
+
+ Rôle des Agents :
+ ⚡ ML Local : Analyse de la biométrie passive (dynamique de frappe et mouvements de souris).
+
+
+ 🧠 IA Cloud : Arbitrage agentique de la réponse client (décision autonome de déblocage ou maintien du gel) et rédaction des messages FCM/Telegram.
+
+
+ 👤 Humain : Peut court-circuiter l'IA en cas de réclamation directe au support.
+
+
+ 🧬 4ème Agent : Étudie les taux de réussite des défis 2FA pour détecter de nouveaux contournements.
+
+
+
+
+ Éléments et Back-End :
+ Sélecteur de canal (`Push FCM`, `Telegram`, `SMS`).
+
+
+ `[ 🚀 Renvoyer le Défi Dynamique ]` : Route `/api/client-hub/send-challenge` via `notification_hub.py`.
+
+
+ Panneau de réception et arbitrage agentique avec Audit Trail intégré.
+
+
+
+
+
+---
+
+ 📋 4. Moniteur 4 : Rapports AML / KYC et Investigation
+
+ Rôle des Agents :
+ ⚡ ML Local / Graphe : Cartographie Neo4j des relations et réseaux de mules financières.
+
+
+ 🧠 IA Cloud : Rédige les rapports de conformité AML en langage naturel et orchestre le dispatch vers TRACFIN.
+
+
+ 👤 Humain : Valide, signe et exporte les dossiers officiels.
+
+
+ 🧬 4ème Agent : Intègre les schémas de blanchiment découverts.
+
+
+
+
+ Éléments et Back-End :
+ `[ 🤖 Demander une Analyse Approfondie à Llama ]` : Route `/api/aml/deep-analyze`.
+
+
+ `[ 🏛️ Exporter le Rapport TRACFIN (PDF) ]` : Route `/api/aml/export-tracfin` — Audit : `[COMPLIANCE-ACTION]`.
+
+
+
+
+
+---
+
+ 🧬 5. Moniteur 5 : Threat Hunting et Self-Healing AI (Le 4ème Agent en Action)
+
+ Rôle des Agents :
+ 🧬 4ème Agent (Principal) : Auto-apprentissage continu, mutation autonome des règles de défense, simulations d'attaques (Red Teaming IA) et consensus inter-banques.
+
+
+ ⚡ ML Local : Reçoit et applique en direct les nouvelles règles de pondération.
+
+
+ 🧠 IA Cloud : Fournit la puissance cognitive pour synthétiser les tendances criminelles.
+
+
+ 👤 Humain : Supervise via le terminal, audite les règles et exerce un veto humain si nécessaire.
+
+
+
+
+ Éléments et Back-End :
+ Terminal de l'Agent Autonome (Agentic Feed) et Tableau de bord des mutations.
+
+
+ `[ 🧪 Lancer une Simulation d'Attaque (Red Teaming IA) ]` : Route `/api/self-healing/red-team-simulation`.
+
+
+ `[ 🔄 Synchroniser le Consensus Fédéré Global ]` : Route `/api/federated/sync`.
+
+
+ `[ 🛑 Veto / Auditer la Règle Agent ]` : Permet à l'analyste de geler une règle — Audit : `[AGENT-SELF-HEALING]` / `[HUMAN-VETO]`.
+
+
+
+
+
+---
+
+ 6. Architecture du Code Source (`meta-shieldfin/`) et Logique des Fichiers
+
+
+meta-shieldfin/
+├── 📂 backend/                      Serveur d'orchestration FastAPI
+│   ├── 📂 api/
+│   │   ├── routes_transactions.py  Ingestion des paiements et Velocity Checking
+│   │   ├── routes_soc.py           Commandes SOC et Boucle RLHF
+│   │   └── routes_client_hub.py    Gestion des défis 2FA et réponses clients (Moniteur 3)
+│   ├── 📂 core/
+│   │   ├── ml_detector.py          Isolation Forest (< 5 ms et Fail-Safe)
+│   │   ├── llama_agent.py          Agent cognitif Meta Llama 3.1 (Décisions et AML)
+│   │   ├── failsafe_engine.py      Bascule de secours autonome hors-ligne
+│   │   ├── self_healing_agent.py   Le 4ème Agent d'auto-guérison (Moniteur 5)
+│   │   └── notification_hub.py     Passerelle FCM / Telegram Bot
+│   ├── 📂 security/
+│   │   ├── zk_proof_verifier.py    Générateur et vérificateur ZK-SNARKs (RGPD via snarkjs)
+│   │   └── keystroke_biometrics.py Analyse comportementale clavier/souris
+│   ├── 📂 db/
+│   │   ├── database.py             SQLite / PostgreSQL
+│   │   ├── audit_logger.py         Journal d'audit immuable universel
+│   │   └── neo4j_connector.py      Base de graphes (Mules financières)
+│   ├── main.py                     Point d'entrée FastAPI, WebSockets et Initialisation
+│   └── requirements.txt            Liste des dépendances Python
+│
+├── 📂 frontend/                     Interface SOC (Fond clair ISO 9241)
+│   ├── index.html                  Console unifiée des 5 Moniteurs
+│   ├── 📂 css/
+│   │   ├── industrial_theme.css    Thème blanc/gris clair haute lisibilité
+│   │   └── soc_layout.css          Structure des écrans et Header d'urgence
+│   ├── 📂 js/
+│   │   ├── app.js                  WebSocket temps réel
+│   │   ├── client_hub.js           Logique du Moniteur 3
+│   │   └── soc_actions.js         Commandes 1-clic et RLHF
+│   └── 📂 assets/                  Logos et ressources visuelles
+│
+├── 📜 .env.example                 Variables d'environnement (GROQ_API_KEY)
+├── 📜 Dockerfile                   Configuration de conteneurisation Back-End
+└── 📜 README.md                    Dossier de présentation pour le jury du hackathon
+
+_____________________________________________________________
+
+ Logique Métier par Fichier :
+
+ `main.py` : Lance le serveur FastAPI, configure les CORS, monte les routes et ouvre le flux WebSocket (`/ws/live-soc`).
+
+
+ `routes_transactions.py` : Reçoit les flux de paiement et valide leur structure via Pydantic.
+
+
+ `routes_soc.py` : Traite les actions humaines (Validation/Blocage) et active la boucle RLHF.
+
+
+ `routes_client_hub.py` : Gère l'envoi des défis de sécurité (FCM/Telegram) et réceptionne les réponses clients.
+
+
+ `ml_detector.py` : Exécute le modèle Scikit-Learn (Isolation Forest) en < 5 ms.
+
+
+ `llama_agent.py` : Interroge l'API Groq (Meta Llama 3.1) pour l'analyse sémantique, la décision agentique et les rapports AML.
+
+
+ `failsafe_engine.py` : Surveille le cloud et durcit les seuils du ML local en cas de coupure.
+
+
+ `self_healing_agent.py` : Le 4ème agent (Moniteur 5) : analyse les erreurs, réécrit les règles de défense et simule des attaques (Red Teaming).
+
+
+ `zk_proof_verifier.py` : Certifie la conformité ZK des transactions sans exposition de données.
+
+
+ `audit_logger.py` : Enregistre immuablement chaque action avec son horodatage et son acteur (`[SYSTEM-ML]`, `[AI-LLAMA]`, `[HUMAN-SOC]`, `[AGENT-SELF-HEALING]`).
+
+
+______________________________________________________________________________________________
+
+ 📑 Synthèse Stratégique : Meta ShieldFin
+
+ 1. 🤖 Rôle et Fonctionnalité des 4 Agents Décisionnels
+
+L'architecture de Meta ShieldFin repose sur une synergie entre 4 piliers autonomes et humains :
+
+ ⚡ 1. Le ML Local (Scikit-Learn - Isolation Forest) : Le gardien ultra-rapide (< 5 ms*). Il assure l'ingestion brute, le *velocity checking*, l'interception instantanée des botnets et garantit la continuité en mode *Fail-Safe* si le cloud tombe.
+
+
+ 🧠 2. L'IA Cloud (Meta Llama 3.1 via Groq) : Le cerveau cognitif. Il analyse sémantiquement les « zones grises », prend les décisions agentiques de blocage ou d'exigence 2FA, arbitre les réponses des clients et rédige les rapports de conformité.
+
+
+ 👤 3. L'Humain (Opérateur SOC) : Le souverain de la supervision. Il intervient en un clic pour valider ou rejeter les alertes, alimentant ainsi la boucle d'apprentissage par renforcement humain (*RLHF*).
+
+
+ 🧬 4. L'Agent d'Auto-Guérison (Self-Healing AI - Moniteur 5) : L'agent d'avant-garde. En arrière-plan, il analyse les erreurs et faux positifs, réécrit de manière autonome de nouvelles règles de défense, simule des attaques (*Red Teaming IA*) et synchronise le consensus inter-banques.
+
+
+
+---
+
+ 2. 🛠️ Les Solutions Apportées aux Problèmes Bancaires
+
+ *Routage Hybride Vitesse / Précision : Combine le traitement local quasi-instantané (< 5 ms) et la puissance cognitive du cloud sans saturer le système.
+
+
+ *Résilience Totale (Mode Fail-Safe) : En cas de coupure de connexion internet ou du cloud, le système bascule de manière autonome en mode local en durcissant ses seuils, évitant toute paralysie.
+
+
+ *Confidentialité et RGPD Absolus : Utilisation de preuves Zéro-Connaissance (*ZK-SNARKs* via `snarkjs`) pour valider la légitimité des transactions sans jamais exposer les données sensibles ou les montants en clair.
+
+
+ *Traçabilité Immuable (Audit Trail) : Chaque action (qu'elle émane du système, de l'IA, de l'humain ou de l'agent d'auto-guérison) est consignée dans un journal centralisé inaltérable avec horodatage et empreinte.
+
+
+
+---
+
+ 3. 🚀 Distinction avec les Solutions Existantes (Le Facteur de Rupture)
+
+Contrairement aux outils traditionnels (Stripe Radar, FICO Falcon, passerelles bancaires classiques) :
+
+ *Dashboards Actifs vs Passifs : Les outils actuels se contentent d'afficher des graphiques d'alerte. Meta ShieldFin intègre des *commandes d'intervention 1-clic* et une *auto-guérison active* (le système se corrige et mute ses propres règles tout seul).
+
+
+ *Intelligence Agentique Autonome : L'IA ne se limite pas à un score de risque ; elle discerne le contexte, négocie les défis de sécurité avec l'utilisateur et mène des enquêtes criminelles automatisées.
+
+
+ *Sécurité Hors-Ligne Intégrée : La plupart des solutions s'effondrent ou rejettent tout en bloc si le cloud décroche. ShieldFin maintient un filtrage local intelligent et adaptatif.
+
+
+
+---
+
+ 4. 🌐 Domaines d'Intervention couverts par les Agents
+
+Le système déploie ses compétences à travers plusieurs disciplines technologiques et sectorielles :
+
+ *Cybersécurité & Détection de Fraude : Analyse comportementale, biométrie passive (dynamique de frappe et mouvements de souris), interception de botnets.
+
+
+ *Intelligence Artificielle & NLP : Utilisation de grands modèles de langage (Meta Llama 3.1), génération de règles de défense en langage naturel, *Text-to-SQL*, et apprentissage continu.
+
+
+ *OSINT & Criminalistique Financière : Croisement de métadonnées mondiales, analyse de la réputation des adresses IP/VPN, et cartographie des réseaux de blanchiment d'argent et de mules financières via des bases de graphes (*Neo4j*).
+
+
+ *Cryptographie Avancée : Implémentation de circuits mathématiques ZK-SNARKs pour la protection de la vie privée.
+
+
+ *Conformité Réglementaire & Juridique : Automatisation des processus *AML / KYC* et génération de rapports officiels normalisés (aux normes *TRACFIN*).

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Console SOC Meta ShieldFin - supervision, audit et investigation des transactions">
+  <title>Meta ShieldFin — Console SOC</title>
+  <link rel="stylesheet" href="/assets/css/industrial_theme.css">
+  <link rel="stylesheet" href="/assets/css/soc_layout.css">
+</head>
+<body>
+  <header class="soc-header">
+    <a class="brand" href="/" aria-label="Meta ShieldFin accueil">
+      <span class="brand-mark">M</span><span><strong>META SHIELDFIN</strong><small>SOC INDUSTRIAL · v1.0</small></span>
+    </a>
+    <div class="header-stats">
+      <div class="stat"><strong id="stat-analyzed">—</strong><span>Transactions</span></div>
+      <div class="stat critical"><strong id="stat-alerts">—</strong><span>Alertes critiques</span></div>
+      <div class="stat warning"><strong id="stat-challenges">—</strong><span>Défis actifs</span></div>
+    </div>
+    <div class="header-actions">
+      <span id="cloud-status" class="status-pill"><i></i>Connexion…</span>
+      <button id="failsafe-toggle" class="button button-danger">⚡ Fail-safe : <span id="failsafe-label">OFF</span></button>
+      <span id="operator-name" class="operator-name"></span>
+      <button id="logout" class="button button-light hidden">Déconnexion</button>
+    </div>
+  </header>
+
+  <nav class="monitors-nav" aria-label="Moniteurs SOC">
+    <button class="nav-tab active" data-tab="live">📺 <span>Live SOC</span></button>
+    <button class="nav-tab" data-tab="registry">🔐 <span>Registre & ZK</span></button>
+    <button class="nav-tab" data-tab="clients">📲 <span>Client Hub & 2FA</span></button>
+    <button class="nav-tab" data-tab="aml">📋 <span>Rapports AML / KYC</span></button>
+    <button class="nav-tab" data-tab="healing">🧬 <span>Self-Healing AI</span></button>
+  </nav>
+
+  <main class="container">
+    <section id="panel-live" class="panel active" aria-labelledby="heading-live">
+      <div class="page-heading"><div><p class="eyebrow">SURVEILLANCE TEMPS RÉEL</p><h1 id="heading-live">Flux de transactions</h1></div><span class="live-indicator"><i></i> Live SOC</span></div>
+      <div class="card">
+        <div class="card-header"><div><h2>Transactions surveillées</h2><p>Scores calculés par le moteur local; les décisions restent auditables.</p></div><button id="refresh-transactions" class="button button-light">Actualiser</button></div>
+        <div class="table-wrap">
+          <table class="data-table"><thead><tr><th>Transaction</th><th>Client</th><th>Montant</th><th>Vélocité</th><th>Risque ML</th><th>Proxy</th><th>Statut</th><th>Intervention SOC</th></tr></thead><tbody id="transactions-body"></tbody></table>
+        </div>
+        <div id="transaction-empty" class="empty-state hidden">Aucune transaction. L'ingestion API peut être utilisée pour en créer.</div>
+      </div>
+      <div class="grid-two metrics-row">
+        <article class="card mini-card"><span class="metric-icon blue">⚡</span><div><h3>Moteur local</h3><p id="baseline-description">Seuils de règles locaux; apprentissage à partir des transactions légitimes.</p></div></article>
+        <article class="card mini-card"><span class="metric-icon purple">🧠</span><div><h3>Apprentissage supervisé</h3><p id="learning-description">Le modèle attend des décisions humaines annotées.</p></div></article>
+      </div>
+    </section>
+
+    <section id="panel-registry" class="panel" aria-labelledby="heading-registry">
+      <div class="page-heading"><div><p class="eyebrow">TRAÇABILITÉ & CONFIDENTIALITÉ</p><h1 id="heading-registry">Registre & vérification</h1></div></div>
+      <article class="card">
+        <div class="card-header"><div><h2>Recherche dans le registre</h2><p>Filtres locaux bornés; aucune requête SQL libre n'est exécutée.</p></div></div>
+        <form id="search-form" class="search-form"><label class="sr-only" for="search-query">Recherche en langage naturel</label><input id="search-query" placeholder="Ex. Transactions bloquées via Tor avec risque supérieur à 0.8" maxlength="500" required><button class="button button-primary">🔍 Rechercher</button></form>
+        <pre id="search-explanation" class="result-note hidden"></pre>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>Transaction</th><th>Client</th><th>Risque</th><th>Statut</th><th>Preuve / engagement</th></tr></thead><tbody id="search-results"></tbody></table></div>
+      </article>
+      <article class="card">
+        <div class="card-header"><div><h2>Journal d'audit chaîné</h2><p>Chaque entrée référence le hash précédent; stockage SQLite local.</p></div><button id="verify-audit" class="button button-purple">Vérifier l'intégrité</button></div>
+        <div id="audit-integrity" class="result-note hidden" role="status"></div>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>Horodatage</th><th>Acteur</th><th>Action</th><th>Entité</th><th>Hash</th></tr></thead><tbody id="audit-body"></tbody></table></div>
+      </article>
+      <article class="card">
+        <div class="card-header"><div><h2>Vérificateur ZK-SNARK Groth16</h2><p>La clé de vérification et la commande snarkjs doivent être configurées côté serveur.</p></div><span class="tag tag-purple">Groth16</span></div>
+        <form id="zk-form" class="stack-form">
+          <label>Preuve JSON<textarea id="zk-proof" rows="4" placeholder='{"pi_a":[],"pi_b":[],"pi_c":[],"protocol":"groth16","curve":"bn128"}' required></textarea></label>
+          <label>Signaux publics JSON<textarea id="zk-signals" rows="2" placeholder='["1","42"]' required></textarea></label>
+          <button class="button button-purple">🔍 Vérifier la preuve</button>
+        </form>
+        <div id="zk-result" class="result-note hidden" role="status"></div>
+      </article>
+      <p class="disclaimer">La vérification SHA-256 du journal est un contrôle d'intégrité, pas une preuve ZK-SNARK. Le vérificateur Groth16 utilise la clé de vérification configurée sur le serveur.</p>
+    </section>
+
+    <section id="panel-clients" class="panel" aria-labelledby="heading-clients">
+      <div class="page-heading"><div><p class="eyebrow">INTERACTION CLIENT</p><h1 id="heading-clients">Client Hub & 2FA</h1></div></div>
+      <div class="grid-two">
+        <article class="card">
+          <div class="card-header"><div><h2>Défis de sécurité</h2><p>Les codes sont envoyés via le fournisseur configuré; l'API retourne une erreur si l'envoi échoue.</p></div><button id="refresh-challenges" class="button button-light">Actualiser</button></div>
+          <form id="challenge-form" class="stack-form">
+            <label>Transaction<select id="challenge-transaction" required></select></label>
+            <label>Canal<select id="challenge-channel"><option value="FCM">Push FCM</option><option value="TELEGRAM">Telegram</option><option value="SMS">SMS</option></select></label>
+            <button class="button button-primary">🚀 Créer un défi</button>
+          </form>
+          <div class="table-wrap"><table class="data-table"><thead><tr><th>Défi</th><th>Transaction</th><th>Canal</th><th>Statut</th></tr></thead><tbody id="challenges-body"></tbody></table></div>
+          <details class="contact-settings">
+            <summary>Coordonnées client chiffrées — réservées au senior</summary>
+            <form id="contact-form" class="stack-form">
+              <label>Identifiant client<input id="contact-customer-id" pattern="[A-Za-z0-9_-]+" required></label>
+              <label>Téléphone E.164<input id="contact-phone" placeholder="+33612345678"></label>
+              <label>Telegram chat ID<input id="contact-telegram"></label>
+              <label>Jeton d'inscription FCM<input id="contact-fcm" maxlength="4096"></label>
+              <button class="button button-light">Enregistrer les destinations chiffrées</button>
+            </form>
+          </details>
+        </article>
+        <article class="card">
+          <div class="card-header"><div><h2>Réponse 2FA</h2><p>Les codes expirent après cinq minutes et cinq essais maximum.</p></div></div>
+          <form id="response-form" class="stack-form">
+            <label>Identifiant du défi<input id="response-challenge-id" placeholder="CH-…" required></label>
+            <label>Code OTP<input id="response-code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6 chiffres" required></label>
+            <label>Score biométrique<input id="response-biometrics" type="number" min="0" max="1" step="0.01" value="0.96"></label>
+            <button class="button button-primary">Vérifier la réponse</button>
+          </form>
+          <div id="challenge-result" class="result-note hidden" role="status"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="panel-aml" class="panel" aria-labelledby="heading-aml">
+      <div class="page-heading"><div><p class="eyebrow">INVESTIGATION & CONFORMITÉ</p><h1 id="heading-aml">Rapports AML / KYC</h1></div></div>
+      <div class="grid-two">
+        <article class="card">
+          <div class="card-header"><div><h2>Dossier d'investigation</h2><p id="aml-case-id">Chargement…</p></div></div>
+          <div id="aml-report" class="report-box">Les rapports sont générés à partir des données locales et doivent être validés par un analyste.</div>
+          <div class="button-row"><button id="analyze-aml" class="button button-primary">🤖 Analyse approfondie</button><a id="export-aml" class="button button-success" href="/api/aml/export-tracfin">Exporter le PDF</a></div>
+        </article>
+        <article class="card">
+          <div class="card-header"><div><h2>Vue des relations suspectes</h2><p>Relations fournies par le connecteur Neo4j configuré.</p></div><span id="graph-status" class="tag tag-neutral">Non configuré</span></div>
+          <div id="graph-preview" class="graph-preview"><span id="graph-message">Connecteur Neo4j non configuré.</span></div>
+          <p class="disclaimer">Les relations sont lues depuis Neo4j. Aucun enregistrement n'est envoyé vers Neo4j automatiquement.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="panel-healing" class="panel" aria-labelledby="heading-healing">
+      <div class="page-heading"><div><p class="eyebrow">DÉFENSE ADAPTATIVE</p><h1 id="heading-healing">Self-Healing AI & Threat Hunting</h1></div><span class="tag tag-warning">Veto humain activé</span></div>
+      <div class="grid-two">
+        <article class="card">
+          <div class="card-header"><div><h2>Agent de défense local</h2><p>Simulation déterministe de profils synthétiques, sans trafic réel.</p></div></div>
+          <div class="agent-terminal" id="agent-feed">[AGENT-5] Console prête. Les actions sont journalisées.</div>
+          <div class="button-row"><button id="run-red-team" class="button button-purple">🧪 Lancer la simulation</button><button id="federated-sync" class="button button-light">🔄 Sync fédérée</button></div>
+        </article>
+        <article class="card">
+          <div class="card-header"><div><h2>Règles de détection</h2><p>Les règles issues des retours humains attendent une validation senior avant activation.</p></div><button id="refresh-rules" class="button button-light">Actualiser</button></div>
+          <div class="table-wrap"><table class="data-table"><thead><tr><th>Règle</th><th>Origine</th><th>Statut</th><th>Action</th></tr></thead><tbody id="rules-body"></tbody></table></div>
+        </article>
+      </div>
+    </section>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </main>
+  <section id="login-screen" class="login-screen" aria-labelledby="login-title">
+    <form id="login-form" class="login-card">
+      <span class="brand-mark">M</span>
+      <p class="eyebrow">ACCÈS SÉCURISÉ</p>
+      <h1 id="login-title">Connexion opérateur</h1>
+      <p>Connecte-toi avec le compte opérateur configuré pour cette instance.</p>
+      <label>Adresse e-mail<input id="login-email" type="email" autocomplete="username" required></label>
+      <label>Mot de passe<input id="login-password" type="password" autocomplete="current-password" required></label>
+      <button class="button button-primary">Se connecter</button>
+      <div id="login-error" class="login-error hidden" role="alert"></div>
+    </form>
+  </section>
+  <script src="/assets/js/app.js" defer></script>
+  <script src="/assets/js/soc_actions.js" defer></script>
+  <script src="/assets/js/client_hub.js" defer></script>
+</body>
+</html>

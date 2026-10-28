@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta ShieldFin - Moniteur 2 : Registre DB & ZK-Proof</title>
+    <style>
+        /* ==========================================================================
+           1. THÈME ET STYLES INDUSTRIELS (ISO 9241 - Fond clair haute visibilité)
+           ========================================================================== */
+        :root {
+            --bg-main: #f4f6f9;
+            --bg-card: #ffffff;
+            --border-color: #dcdfe6;
+            --text-primary: #1f2d3d;
+            --text-secondary: #5e6d82;
+            
+            --color-success: #13ce66;
+            --color-warning: #e6a23c;
+            --color-danger: #ff4949;
+            --color-info: #1890ff;
+            --color-purple: #8a2be2;
+            --color-dark-accent: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* ==========================================================================
+           2. HEADER GLOBAL PERMANENT
+           ========================================================================== */
+        header.soc-header {
+            background-color: #ffffff;
+            border-bottom: 2px solid var(--border-color);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--color-dark-accent);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-badge {
+            background-color: #e8f4ff;
+            color: #1890ff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #096dd9;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-success);
+        }
+
+        .btn-failsafe {
+            background-color: var(--color-danger);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ==========================================================================
+           3. NAVIGATION DES MONITEURS
+           ========================================================================== */
+        nav.monitors-nav {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: var(--color-info);
+            border-bottom-color: var(--color-info);
+        }
+
+        .nav-tab.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ==========================================================================
+           4. MONITEUR 2 LAYOUT
+           ========================================================================== */
+        main.container {
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-dark-accent);
+        }
+
+        /* Section Recherche Sémantique Text-to-SQL */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--color-info);
+        }
+
+        .btn-search {
+            background-color: var(--color-info);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sql-output-box {
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-top: 10px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 12px;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sql-tag {
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 10px;
+        }
+
+        /* Layout Grille pour Tableau d'Audit & Verificateur ZK */
+        .grid-two-cols {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        /* Tableau d'Audit Universel Immuable */
+        table.audit-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        table.audit-table th {
+            background-color: #f8faee;
+            color: var(--text-secondary);
+            padding: 10px 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        table.audit-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .actor-tag {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .actor-system { background-color: #e6f7ff; color: #096dd9; border: 1px solid #91d5ff; }
+        .actor-llama { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
+        .actor-human { background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .actor-agent5 { background-color: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; }
+
+        .hash-code {
+            font-family: "Courier New", Courier, monospace;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        /* Panneau de Vérification ZK-Proof */
+        .zk-box {
+            background-color: #fcfcfd;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .zk-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .zk-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .zk-field {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 12px;
+            color: #1e293b;
+        }
+
+        .btn-verify-zk {
+            background-color: var(--color-purple);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+
+        .btn-verify-zk:hover {
+            opacity: 0.9;
+        }
+
+        .zk-status-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #047857;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================================================
+       0. HEADER GLOBAL PERMANENT
+       ========================================================================== -->
+    <header class="soc-header">
+        <div class="brand-section">
+            <div class="brand-logo">META SHIELDFIN</div>
+            <div class="brand-badge">SOC INDUSTRIAL v1.0</div>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-item">
+                <span class="stat-value">14,280</span>
+                <span class="stat-label">Analysées / 24h</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" style="color: var(--color-danger);">3</span>
+                <span class="stat-label">Alertes Critiques</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" style="color: var(--color-warning);">12</span>
+                <span class="stat-label">Défis 2FA Actifs</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>GROQ / LLAMA 3.1 : OPÉRATIONNEL</span>
+            </div>
+            <button class="btn-failsafe">
+                ⚡ FAIL-SAFE SWITCH
+            </button>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+       NAVIGATION DES MONITEURS
+       ========================================================================== -->
+    <nav class="monitors-nav">
+        <button class="nav-tab disabled">📺 Moniteur 1: Live SOC</button>
+        <button class="nav-tab active">🔐 Moniteur 2: Registre DB & ZK-Proof</button>
+        <button class="nav-tab disabled">📲 Moniteur 3: Client Hub & 2FA</button>
+        <button class="nav-tab disabled">📋 Moniteur 4: Rapports AML / KYC</button>
+        <button class="nav-tab disabled">🧬 Moniteur 5: Self-Healing AI Agent</button>
+    </nav>
+
+    <!-- ==========================================================================
+       MONITEUR 2 : REGISTRE DB & ZK-PROOF INTERFACE
+       ========================================================================== -->
+    <main class="container">
+        
+        <!-- Section 1 : Recherche Sémantique Text-to-SQL (IA Meta Llama) -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🔍 Recherche Sémantique dans le Registre (Text-to-SQL Llama)</span>
+                <span style="font-size: 12px; color: var(--text-secondary);">Moteur d'Audit Sémantique v1.0</span>
+            </div>
+
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <input type="text" class="search-input" value="Montre les transactions bloquées hier avec un proxy Tor et un score supérieur à 0.8">
+                </div>
+                <button class="btn-search">
+                    🤖 Traduire & Exécuter
+                </button>
+            </div>
+
+            <div class="sql-output-box">
+                <span class="sql-tag">SQL Généré</span>
+                <code>SELECT * FROM audit_logs WHERE status = 'BLOCKED' AND proxy_type = 'TOR' AND risk_score > 0.80 AND timestamp >= NOW() - INTERVAL '1 DAY';</code>
+            </div>
+        </div>
+
+        <!-- Section 2 : Tableau d'Audit & Verificateur Cryptographique ZK-Proof -->
+        <div class="grid-two-cols">
+            
+            <!-- Colonne Gauche : Tableau d'Audit Universel Immuable -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">📜 Journal d'Audit Universel Immuable</span>
+                    <span style="font-size: 12px; color: var(--text-secondary);">Traçabilité 100% Garantie</span>
+                </div>
+
+                <table class="audit-table">
+                    <thead>
+                        <tr>
+                            <th>Horodatage (ms)</th>
+                            <th>Acteur Originel</th>
+                            <th>Action Réalisée</th>
+                            <th>Preuve ZK-Hash</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>12:04:58.892</td>
+                            <td><span class="actor-tag actor-system">[SYSTEM-ML]</span></td>
+                            <td>Détection anomalie de vélocité (5ms)</td>
+                            <td><span class="hash-code">0x8F4C...2B9</span></td>
+                        </tr>
+                        <tr>
+                            <td>12:04:59.104</td>
+                            <td><span class="actor-tag actor-llama">[AI-LLAMA]</span></td>
+                            <td>Ordre de blocage automatique (#TX-9042)</td>
+                            <td><span class="hash-code">0x3A71...E4F</span></td>
+                        </tr>
+                        <tr>
+                            <td>12:03:12.440</td>
+                            <td><span class="actor-tag actor-human">[HUMAN-SOC-84]</span></td>
+                            <td>Approbation manuelle transaction (#TX-9038)</td>
+                            <td><span class="hash-code">0x9B12...C88</span></td>
+                        </tr>
+                        <tr>
+                            <td>12:00:00.000</td>
+                            <td><span class="actor-tag actor-agent5">[AGENT-SELF-HEALING]</span></td>
+                            <td>Mutation règle #104 injectée au ML</td>
+                            <td><span class="hash-code">0x11C9...D02</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Colonne Droite : Inspecteur Cryptographique ZK-SNARKs -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🔐 Inspecteur ZK-SNARKs (snarkjs)</span>
+                    <span style="font-size: 11px; background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Conformité RGPD</span>
+                </div>
+
+                <div class="zk-box">
+                    <div class="zk-input-group">
+                        <span class="zk-label">Hash Cryptographique (Public Input)</span>
+                        <div class="zk-field">0x8F4C9B12A4E7F3D01C88E2B9</div>
+                    </div>
+
+                    <div class="zk-input-group">
+                        <span class="zk-label">Preuve Mathématique (ZK-Proof String)</span>
+                        <div class="zk-field" style="height: 50px; overflow-y: hidden;">{"pi_a":["0x18a...","0x23f..."],"pi_b":[["0x03b...","0x11a..."]],"protocol":"groth16"}</div>
+                    </div>
+
+                    <button class="btn-verify-zk">
+                        🔍 Vérifier la Preuve Cryptographique
+                    </button>
+
+                    <div class="zk-status-badge">
+                        <span>✔ PREUVE MATHÉMATIQUE VALIDE (Zero-Knowledge Verified)</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

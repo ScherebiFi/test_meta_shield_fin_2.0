@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta ShieldFin - Moniteur 3 : Client Hub & 2FA</title>
+    <style>
+        :root {
+            --bg-main: #f4f6f9;
+            --bg-card: #ffffff;
+            --border-color: #dcdfe6;
+            --text-primary: #1f2d3d;
+            --text-secondary: #5e6d82;
+            --color-success: #13ce66;
+            --color-warning: #e6a23c;
+            --color-danger: #ff4949;
+            --color-info: #1890ff;
+            --color-dark-accent: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* HEADER GLOBAL PERMANENT */
+        header.soc-header {
+            background-color: #ffffff;
+            border-bottom: 2px solid var(--border-color);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--color-dark-accent);
+        }
+
+        .brand-badge {
+            background-color: #e8f4ff;
+            color: #1890ff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #096dd9;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-success);
+        }
+
+        .btn-failsafe {
+            background-color: var(--color-danger);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* NAVIGATION DES MONITEURS */
+        nav.monitors-nav {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: var(--color-info);
+            border-bottom-color: var(--color-info);
+        }
+
+        .nav-tab.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* CONTAINER PRINCIPAL */
+        main.container {
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .soc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-dark-accent);
+        }
+
+        /* STYLES INTERNES MONITEUR 3 */
+        table.client-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        table.client-table th {
+            background-color: #f8faee;
+            color: var(--text-secondary);
+            padding: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        table.client-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .channel-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn-channel {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-channel.active {
+            background: #e6f7ff;
+            color: #096dd9;
+            border-color: #91d5ff;
+        }
+
+        .ai-verdict-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn-success { background-color: #e6fffa; color: #047857; border: 1px solid #a7f3d0; }
+        .btn-danger { background-color: #ffeef0; color: #b91c1c; border: 1px solid #fca5a5; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER GLOBAL PERMANENT -->
+    <header class="soc-header">
+        <div class="brand-section">
+            <div class="brand-logo">META SHIELDFIN</div>
+            <div class="brand-badge">SOC INDUSTRIAL v1.0</div>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-item">
+                <span class="stat-value">14,280</span>
+                <span class="stat-label">Analysées / 24h</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" style="color: var(--color-danger);">3</span>
+                <span class="stat-label">Alertes Critiques</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" style="color: var(--color-warning);">12</span>
+                <span class="stat-label">Défis 2FA Actifs</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>GROQ / LLAMA 3.1 : OPÉRATIONNEL</span>
+            </div>
+            <button class="btn-failsafe" onclick="alert('Activation du mode secours local !')">
+                ⚡ FAIL-SAFE SWITCH
+            </button>
+        </div>
+    </header>
+
+    <!-- NAVIGATION MONITEURS -->
+    <nav class="monitors-nav">
+        <button class="nav-tab" onclick="location.href='index.html'">📺 Moniteur 1: Live SOC</button>
+        <button class="nav-tab" onclick="location.href='moniteur2.html'">🔐 Moniteur 2: Registre & ZK-Proof</button>
+        <button class="nav-tab active">📲 Moniteur 3: Client Hub & 2FA</button>
+        <button class="nav-tab disabled">📋 Moniteur 4: Rapports AML / KYC</button>
+        <button class="nav-tab disabled">🧬 Moniteur 5: Self-Healing AI Agent</button>
+    </nav>
+
+    <!-- MONITEUR 3 : INTERFACE -->
+    <main class="container">
+        <div class="soc-grid">
+            
+            <!-- Colonne Gauche : Section Outbound (Émission des Défis) -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Émission des Défis de Sécurité (Outbound)</span>
+                    <span style="font-size: 12px; color: var(--text-secondary);">12 Actifs</span>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 12px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 6px;">SÉLECTIONNER LE CANAL DE DIFFUSION :</label>
+                    <div class="channel-selector">
+                        <button class="btn-channel active">📲 Push FCM</button>
+                        <button class="btn-channel">✈️ Bot Telegram</button>
+                        <button class="btn-channel">💬 SMS Sécurisé</button>
+                    </div>
+                </div>
+
+                <table class="client-table">
+                    <thead>
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th>Canal</th>
+                            <th>Statut Défi</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>USR-4092</b> (Luxembourg)</td>
+                            <td>Push FCM</td>
+                            <td><span style="color: var(--color-warning); font-weight: 600;">En attente...</span></td>
+                            <td><button class="btn-action" style="background:#e6f7ff; color:#096dd9;" onclick="alert('Défi 2FA redémarré avec succès !')">🚀 Renvoyer</button></td>
+                        </tr>
+                        <tr>
+                            <td><b>USR-8812</b> (Paris)</td>
+                            <td>Telegram</td>
+                            <td><span style="color: var(--color-success); font-weight: 600;">Délivré</span></td>
+                            <td><button class="btn-action" style="background:#f0f0f0;" disabled>Envoyé</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Colonne Droite : Section Inbound (Réception & Arbitrage Agentique) -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Arbitrage Agentique & Réception Client</span>
+                    <span style="font-size: 11px; background: #e6fffa; color: #047857; padding: 2px 6px; border-radius: 4px;">Live Inbound</span>
+                </div>
+
+                <div style="font-size: 13px; margin-bottom: 12px;">
+                    <b>Dernière Réponse Reçue :</b> <span style="color: var(--text-secondary);">USR-4092 (Tx #TX-9042)</span>
+                    <div style="background: #f8fafc; padding: 8px; border-radius: 4px; margin-top: 4px; font-family: monospace;">
+                        OTP Saisi : 4892 — Biométrie de frappe : Conforme (96%)
+                    </div>
+                </div>
+
+                <div class="ai-verdict-box">
+                    <div style="font-weight: 700; color: var(--color-dark-accent); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                        🤖 Verdict Agentique Meta Llama 3.1
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                        « Analyse Llama : Bien que l'IP initiale fût suspecte, la dynamique de frappe au clavier correspond rigoureusement au profil biométrique historique de l'utilisateur légitime. Le code OTP est valide. <b>Décision agentique : Déblocage automatique du compte et validation de la transaction.</b> »
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px; display: flex; gap: 10px;">
+                    <button class="btn-action btn-success" style="flex: 1; padding: 10px;" onclick="alert('Compte débloqué manuellement ! Audit enregistré.')">✔ Forcer le Déblocage</button>
+                    <button class="btn-action btn-danger" style="flex: 1; padding: 10px;" onclick="alert('Gel du compte maintenu !')">✖ Maintenir le Gel</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

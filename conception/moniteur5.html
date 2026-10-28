@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta ShieldFin - Moniteur 5 : Self-Healing AI & Threat Hunting</title>
+    <style>
+        :root {
+            --bg-main: #f4f6f9;
+            --bg-card: #ffffff;
+            --border-color: #dcdfe6;
+            --text-primary: #1f2d3d;
+            --text-secondary: #5e6d82;
+            --color-success: #13ce66;
+            --color-warning: #e6a23c;
+            --color-danger: #ff4949;
+            --color-info: #1890ff;
+            --color-dark-accent: #2c3e50;
+            --color-purple: #8a2be2;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* HEADER GLOBAL PERMANENT */
+        header.soc-header {
+            background-color: #ffffff;
+            border-bottom: 2px solid var(--border-color);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--color-dark-accent);
+        }
+
+        .brand-badge {
+            background-color: #e8f4ff;
+            color: #1890ff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #096dd9;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-success);
+        }
+
+        .btn-failsafe {
+            background-color: var(--color-danger);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* NAVIGATION DES MONITEURS */
+        nav.monitors-nav {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: var(--color-info);
+            border-bottom-color: var(--color-info);
+        }
+
+        /* CONTAINER PRINCIPAL */
+        main.container {
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .soc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-dark-accent);
+        }
+
+        /* STYLES INTERNES MONITEUR 5 */
+        .agent-terminal {
+            background-color: #0f172a;
+            color: #38bdf8;
+            font-family: monospace;
+            padding: 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            height: 240px;
+            overflow-y: auto;
+            border: 1px solid #334155;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .terminal-line {
+            margin-bottom: 6px;
+        }
+
+        .terminal-tag {
+            color: #c084fc;
+            font-weight: bold;
+        }
+
+        .mutation-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+
+        .mutation-table th {
+            background-color: #f8faee;
+            color: var(--text-secondary);
+            padding: 8px;
+            border-bottom: 2px solid var(--border-color);
+            text-align: left;
+        }
+
+        .mutation-table td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .btn-action {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-purple { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; }
+        .btn-primary { background-color: #e6f7ff; color: #096dd9; border: 1px solid #91d5ff; }
+        .btn-danger { background-color: #ffeef0; color: #b91c1c; border: 1px solid #fca5a5; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER GLOBAL PERMANENT -->
+    <header class="soc-header">
+        <div class="brand-section">
+            <div class="brand-logo">META SHIELDFIN</div>
+            <div class="brand-badge">SOC INDUSTRIAL v1.0</div>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-item">
+                <span class="stat-value">14,280</span>
+                <span class="stat-label">Analysées / 24h</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" style="color: var(--color-danger);">3</span>
+                <span class="stat-label">Alertes Critiques</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" style="color: var(--color-warning);">12</span>
+                <span class="stat-label">Défis 2FA Actifs</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>GROQ / LLAMA 3.1 : OPÉRATIONNEL</span>
+            </div>
+            <button class="btn-failsafe" onclick="alert('Activation du mode secours local !')">
+                ⚡ FAIL-SAFE SWITCH
+            </button>
+        </div>
+    </header>
+
+    <!-- NAVIGATION MONITEURS -->
+    <nav class="monitors-nav">
+        <button class="nav-tab" onclick="location.href='index.html'">📺 Moniteur 1: Live SOC</button>
+        <button class="nav-tab" onclick="location.href='moniteur2.html'">🔐 Moniteur 2: Registre & ZK-Proof</button>
+        <button class="nav-tab" onclick="location.href='moniteur3.html'">📲 Moniteur 3: Client Hub & 2FA</button>
+        <button class="nav-tab" onclick="location.href='moniteur4.html'">📋 Moniteur 4: Rapports AML / KYC</button>
+        <button class="nav-tab active">🧬 Moniteur 5: Self-Healing AI Agent</button>
+    </nav>
+
+    <!-- MONITEUR 5 : INTERFACE -->
+    <main class="container">
+        <div class="soc-grid">
+            
+            <!-- Colonne Gauche : Terminal de l'Agent Autonome (Agentic Feed) -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Terminal du 4ème Agent (Autonomous Self-Healing Feed)</span>
+                    <span style="font-size: 11px; background: #f3e8ff; color: #7e22ce; padding: 2px 6px; border-radius: 4px;">Actif (En arrière-plan)</span>
+                </div>
+
+                <div class="agent-terminal">
+                    <div class="terminal-line"><span class="terminal-tag">[AGENT-5]</span> Initialisation du cycle d'auto-apprentissage continu...</div>
+                    <div class="terminal-line"><span class="terminal-tag">[AGENT-5]</span> Analyse de 35 faux positifs corrigés par les humains sur le Moniteur 1.</div>
+                    <div class="terminal-line"><span class="terminal-tag">[AGENT-5]</span> Ajustement du seuil de vélocité dynamique : 0.85 ➔ 0.82</div>
+                    <div class="terminal-line" style="color: #4ade80;"><span class="terminal-tag" style="color:#c084fc;">[MUTATION]</span> Génération de la règle #104 : « Bloquer IP proxy + vélocité anormale ».</div>
+                    <div class="terminal-line"><span class="terminal-tag">[AGENT-5]</span> Injection réussie des poids dans le moteur ML local (`Isolation Forest`).</div>
+                    <div class="terminal-line"><span class="terminal-tag">[FEDERATED]</span> Synchronisation des signatures anonymisées avec le réseau inter-banques OK.</div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-action btn-purple" style="flex: 1;" onclick="alert('Simulation d\'attaque (Red Teaming IA) lancée avec succès ! Génération de 5000 profils botnets virtuels.')">
+                        🧪 Lancer Red Teaming IA
+                    </button>
+                    <button class="btn-action btn-primary" style="flex: 1;" onclick="alert('Consensus fédéré global synchronisé avec le réseau inter-banques !')">
+                        🔄 Sync Fédéré Global
+                    </button>
+                </div>
+            </div>
+
+            <!-- Colonne Droite : Tableau des Mutations & Contrôle Souverain Humain -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Tableau de Bord des Règles & Veto Souverain</span>
+                    <span style="font-size: 11px; background: #e8f4ff; color: #1890ff; padding: 2px 6px; border-radius: 4px;">Auto-Guérison</span>
+                </div>
+
+                <table class="mutation-table">
+                    <thead>
+                        <tr>
+                            <th>ID Règle</th>
+                            <th>Origine Agent</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>#RULE-104</b></td>
+                            <td>Auto-Mutation Llama</td>
+                            <td><span style="color: var(--color-success); font-weight:600;">Actif (ML Local)</span></td>
+                            <td><button class="btn-action btn-danger" style="padding: 4px 8px;" onclick="alert('Veto activé : Règle #RULE-104 gelée et annulée par l\'analyste senior.')">🛑 Veto</button></td>
+                        </tr>
+                        <tr>
+                            <td><b>#RULE-103</b></td>
+                            <td>Red Teaming Sim</td>
+                            <td><span style="color: var(--color-success); font-weight:600;">Actif (ML Local)</span></td>
+                            <td><button class="btn-action btn-danger" style="padding: 4px 8px;" onclick="alert('Veto activé : Règle #RULE-103 gelée.')">🛑 Veto</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; margin-top: 16px;">
+                    <div style="font-weight: 700; color: var(--color-dark-accent); margin-bottom: 6px; font-size: 13px;">
+                        🛡️ Contrôle Souverain de l'Analyste Senior
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                        Le 4ème agent fonctionne en autonomie totale pour s'auto-guérir et muter ses défenses, mais l'humain conserve un droit de <b>veto instantané</b> sur n'importe quelle règle générée pour garantir une conformité réglementaire absolue.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

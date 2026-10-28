@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta ShieldFin - Industrial SOC Command Center</title>
+    <style>
+        /* ==========================================================================
+           1. THÈME ET STYLES INDUSTRIELS (Norme ISO 9241 - Fond clair haute lisibilité)
+           ========================================================================== */
+        :root {
+            --bg-main: #f4f6f9;
+            --bg-card: #ffffff;
+            --border-color: #dcdfe6;
+            --text-primary: #1f2d3d;
+            --text-secondary: #5e6d82;
+            
+            /* Status Colors */
+            --color-success: #13ce66;
+            --color-warning: #e6a23c;
+            --color-danger: #ff4949;
+            --color-info: #1890ff;
+            --color-dark-accent: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* ==========================================================================
+           2. HEADER GLOBAL PERMANENT (ISO 9241 High-Contrast)
+           ========================================================================== */
+        header.soc-header {
+            background-color: #ffffff;
+            border-bottom: 2px solid var(--border-color);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--color-dark-accent);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-badge {
+            background-color: #e8f4ff;
+            color: #1890ff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #096dd9;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-success);
+        }
+
+        .btn-failsafe {
+            background-color: var(--color-danger);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-failsafe:hover {
+            opacity: 0.9;
+        }
+
+        /* ==========================================================================
+           3. NAVIGATION DES 5 MONITEURS
+           ========================================================================== */
+        nav.monitors-nav {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: var(--color-info);
+            border-bottom-color: var(--color-info);
+        }
+
+        .nav-tab.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ==========================================================================
+           4. MONITEUR 1 : LIVE SOC LAYOUT
+           ========================================================================== */
+        main.container {
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .soc-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-dark-accent);
+        }
+
+        /* Tableau SOC */
+        table.soc-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        table.soc-table th {
+            background-color: #f8faee;
+            color: var(--text-secondary);
+            padding: 10px 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        table.soc-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        table.soc-table tr.selected {
+            background-color: #e6f7ff;
+        }
+
+        /* Badges de score et biométrie */
+        .badge-biometrics {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-human {
+            background-color: #e6fffa;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .badge-botnet {
+            background-color: #ffeef0;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        .score-pill {
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .score-high { color: var(--color-danger); background-color: #ffeef0; }
+        .score-mid { color: var(--color-warning); background-color: #fffbe6; }
+        .score-low { color: var(--color-success); background-color: #e6fffa; }
+
+        /* Actions 1-Clic */
+        .actions-cell {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-action {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-approve { background-color: #e6fffa; color: #047857; border: 1px solid #a7f3d0; }
+        .btn-approve:hover { background-color: #d1fae5; }
+
+        .btn-challenge { background-color: #fffbe6; color: #b45309; border: 1px solid #fde68a; }
+        .btn-challenge:hover { background-color: #fef3c7; }
+
+        .btn-block { background-color: #ffeef0; color: #b91c1c; border: 1px solid #fca5a5; }
+        .btn-block:hover { background-color: #fee2e2; }
+
+        /* Panneau d'inspection IA */
+        .ai-inspection-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .ai-title {
+            font-weight: 700;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .ai-reasoning {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================================================
+       0. HEADER GLOBAL PERMANENT
+       ========================================================================== -->
+    <header class="soc-header">
+        <div class="brand-section">
+            <div class="brand-logo">META SHIELDFIN</div>
+            <div class="brand-badge">SOC INDUSTRIAL v1.0</div>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-item">
+                <span class="stat-value">14,280</span>
+                <span class="stat-label">Analysées / 24h</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" style="color: var(--color-danger);">3</span>
+                <span class="stat-label">Alertes Critiques</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" style="color: var(--color-warning);">12</span>
+                <span class="stat-label">Défis 2FA Actifs</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>GROQ / LLAMA 3.1 : OPÉRATIONNEL</span>
+            </div>
+            <button class="btn-failsafe" onclick="alert('Bascule d\'urgence : Activation du mode secours local !')">
+                ⚡ FAIL-SAFE SWITCH
+            </button>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+       NAVIGATION MONITEURS
+       ========================================================================== -->
+    <nav class="monitors-nav">
+        <button class="nav-tab active">📺 Moniteur 1: Live SOC</button>
+        <button class="nav-tab disabled">🔐 Moniteur 2: Registre & ZK-Proof</button>
+        <button class="nav-tab disabled">📲 Moniteur 3: Client Hub & 2FA</button>
+        <button class="nav-tab disabled">📋 Moniteur 4: Rapports AML / KYC</button>
+        <button class="nav-tab disabled">🧬 Moniteur 5: Self-Healing AI Agent</button>
+    </nav>
+
+    <!-- ==========================================================================
+       1. MONITEUR 1 : LIVE SOC INTERFACE
+       ========================================================================== -->
+    <main class="container">
+        <div class="soc-grid">
+            
+            <!-- Colonne Gauche : Flux des Alertes Temp Réel -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Flux de Transactions Suspectes (Temps Réel)</span>
+                    <span style="font-size: 12px; color: var(--text-secondary);">Mise à jour WebSocket : <b>Active</b></span>
+                </div>
+
+                <table class="soc-table">
+                    <thead>
+                        <tr>
+                            <th>ID Trans.</th>
+                            <th>Montant ZK</th>
+                            <th>Score Vélocité</th>
+                            <th>Score ML</th>
+                            <th>Biométrie Passive</th>
+                            <th>Intervention SOC (RLHF)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Ligne 1 : Suspecte / Sélectionnée -->
+                        <tr class="selected">
+                            <td><b>#TX-9042</b></td>
+                            <td>4,500.00 EUR</td>
+                            <td><span class="score-pill score-high">0.94</span></td>
+                            <td><span class="score-pill score-high">0.89</span></td>
+                            <td><span class="badge-biometrics badge-botnet">🔴 Botnet (99%)</span></td>
+                            <td class="actions-cell">
+                                <button class="btn-action btn-approve" title="RLHF Feedback Positif">✔</button>
+                                <button class="btn-action btn-challenge" title="Envoyer au Moniteur 3">🔒 2FA</button>
+                                <button class="btn-action btn-block" title="Blocage Immédiat & Log Neo4j">✖ Bloquer</button>
+                            </td>
+                        </tr>
+
+                        <!-- Ligne 2 : Zone Grise -->
+                        <tr>
+                            <td><b>#TX-9041</b></td>
+                            <td>120.50 EUR</td>
+                            <td><span class="score-pill score-mid">0.45</span></td>
+                            <td><span class="score-pill score-mid">0.52</span></td>
+                            <td><span class="badge-biometrics badge-human">🟢 Humain (92%)</span></td>
+                            <td class="actions-cell">
+                                <button class="btn-action btn-approve">✔</button>
+                                <button class="btn-action btn-challenge">🔒 2FA</button>
+                                <button class="btn-action btn-block">✖ Bloquer</button>
+                            </td>
+                        </tr>
+
+                        <!-- Ligne 3 : Normale / Traitée -->
+                        <tr style="opacity: 0.6;">
+                            <td><b>#TX-9040</b></td>
+                            <td>89.00 EUR</td>
+                            <td><span class="score-pill score-low">0.05</span></td>
+                            <td><span class="score-pill score-low">0.02</span></td>
+                            <td><span class="badge-biometrics badge-human">🟢 Humain (98%)</span></td>
+                            <td class="actions-cell">
+                                <span style="font-size: 11px; color: var(--color-success); font-weight:700;">✔ Validé (Auto)</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Colonne Droite : Inspection Cognitif IA & Métadonnées -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Analyse Agentique Llama 3.1</span>
+                    <span style="font-size: 11px; background: #f0f0f0; padding: 2px 6px; border-radius: 4px;">ID: #TX-9042</span>
+                </div>
+
+                <div class="ai-inspection-box">
+                    <div class="ai-title">
+                        🤖 Recommandation Agent IA : <span style="color: var(--color-danger);">BLOQUER CRITIQUE</span>
+                    </div>
+                    <div class="ai-reasoning">
+                        <b>Justification Contextuelle :</b><br>
+                        Incohérence majeure détectée. Connexion initiée depuis un proxy Tor anonyme combinée à une dynamique de frappe non humaine (intervalle inter-touches fixe de 12 ms). Tentative de contournement de vélocité sur carte bancaire enregistrée au Luxembourg.
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px;">AUDIT TRAIL DE L'ALERTE</div>
+                    <ul style="font-size: 12px; color: var(--text-primary); list-style: none; padding-left: 0;">
+                        <li style="margin-bottom: 6px;">⏱ <b>11:59:02.102</b> - <span style="color: var(--color-info);">[SYSTEM-ML]</span> Velocity Score calculé en 3.2 ms.</li>
+                        <li style="margin-bottom: 6px;">⏱ <b>11:59:02.340</b> - <span style="color: #8a2be2;">[AI-AGENT-LLAMA]</span> Zone grise identifiée. Ordre 2FA préconisé.</li>
+                        <li>⏱ <b>11:59:02.345</b> - <span style="color: #d97706;">[ZK-PROOF]</span> Hash cryptographique vérifié. Identité masquée.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
